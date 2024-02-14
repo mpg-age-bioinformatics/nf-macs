@@ -1,0 +1,8 @@
+{ 
+  "project_folder" : "/raven/u/wangy/nf_atacseq_test" ,
+  "seq" : "single" ,
+  "input" : "yes" ,
+  "GeTAG" : "2666151232" ,
+  "peak_type" : "none",
+  "samples_csv" : "/raven/u/wangy/nf_atacseq_test/diffbind_sample_sheet.csv"
+}
