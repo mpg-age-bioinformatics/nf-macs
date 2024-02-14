@@ -43,6 +43,7 @@ process macs2 {
     script:
     """
 mkdir -p /workdir/macs2_output
+mkdir -p /workdir/tmp
 
 cd /workdir/bowtie2_output
 if [[ ${params.seq} == "paired" ]] && [[ ${params.input} == 'no' ]] ; then
