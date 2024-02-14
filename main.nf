@@ -28,72 +28,11 @@ process get_images {
 
 }
 
-// process pre_symlink {
-//   stageInMode 'symlink'
-//   stageOutMode 'move'
-
-//   when:
-
-//   input:
-//     val samplesheet
-        
-//   script:
-//     """
-// #!/usr/local/bin/python3
-// import pandas as pd
-// import os
-
-// sample_sheet = pd.read_csv('${samplesheet}')
-// sample_sheet.head()
-// for index, row in sample_sheet.iterrows():
-//     print('ln -s %s %s' %(row['bamReads'], row['bamReads'].replace('md.bam', 'chip.md.bam')))
-//     os.system('ln -s %s %s' %(row['bamReads'], row['bamReads'].replace('md.bam', 'chip.md.bam')))
-//     print('ln -s %s %s' %(row['bamControl'], row['bamReads'].replace('md.bam', 'input.md.bam')))
-//     os.system('ln -s %s %s' %(row['bamControl'], row['bamReads'].replace('md.bam', 'input.md.bam')))
-
-//     """
-// }
-
-// process macs2 {
-//   stageInMode 'symlink'
-//   stageOutMode 'move'
-
-//   when:
-
-//   input:
-//     val sample
-//     val file_ending
-//     val peak_type
-
-//     script:
-//     """
-// mkdir -p /workdir/macs2_output
-
-// cd /workdir/bowtie2_output
-// if [[ ${params.seq} == "paired" ]] && [[ ${params.input} == 'no' ]] ; then
-//   echo "macs2 callpeak -t ${sample}${file_ending} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-//   macs2 callpeak -t ${sample}${file_ending} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
-// elif [[ ${params.seq} == "single" ]] && [[ ${params.input} == 'no' ]] ; then
-//   echo "macs2 callpeak -t ${sample}${file_ending} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-//   macs2 callpeak -t ${sample}${file_ending} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
-// elif [[ ${params.seq} == "paired" ]] && [[ ${params.input} == 'yes' ]] ; then
-//   echo "macs2 callpeak -t ${sample}${file_ending} -c ${sample}.input.md.bam -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-//   macs2 callpeak -t ${sample}${file_ending} -c ${sample}.input.md.bam -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
-// elif [[ ${params.seq} == "single" ]] && [[ ${params.input} == 'yes' ]] ; then
-//   echo "macs2 callpeak -t ${sample}${file_ending} -c ${sample}.input.md.bam -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-//   macs2 callpeak -t ${sample}${file_ending} -c ${sample}.input.md.bam -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
-// fi
-
-//     """
-
-// }
-
 process macs2 {
   stageInMode 'symlink'
   stageOutMode 'move'
 
   when:
-    // ( ! file("${params.project_folder}/tmp/ATACSeqQC.${sample}.Rdata").exists() ) 
 
   input:
     val sample
@@ -142,22 +81,10 @@ workflow{
       file_ending=".md.bam"
     }
 
-    // // pre_symlink(params.samples_csv)
-    // sample=Channel.fromPath( "${params.project_folder}/bowtie2_output/*${file_ending}" )
-    // sample=sample.map{ "$it.baseName" }
-    // // sample=sample.map{ "$it".replaceAll("${file_ending}","") }
-    // sample=sample.map{ "$it".replace(".chip","").replace(".md","").replace(".bam","") }
-
-    // sample.view()
-    // macs2(sample,file_ending,peak_type)
-
   rows=Channel.fromPath("${params.samples_csv}", checkIfExists:true).splitCsv(sep:',', skip: 1)
-  // rows=rows.filter{ ! file( "${params.project_folder}/${params.output_test}/${it[0]}.gene_summary.txt" ).exists() }
+  rows=rows.filter{ ! file( "${params.project_folder}/macs2_output/${it[0]}_peaks.xls" ).exists() }
   sample=rows.flatMap { n -> n[0] }
   treatment_file=rows.flatMap { n -> n[3] }
-  // treatment_file=treatment_file.map{ "$it.baseName" }
-  // treatment_file=treatment_file.replaceAll('.ss.bam', '')
   control_file=rows.flatMap { n -> n[5] }
-  // control_file=control_file.map{ "$it.baseName" }
   macs2(sample,treatment_file,control_file,peak_type)
 }
