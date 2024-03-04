@@ -36,6 +36,7 @@ process macs2 {
 
   input:
     val sample
+    val replicate
     val treatment_file
     val control_file
     val peak_type
@@ -45,19 +46,21 @@ process macs2 {
 mkdir -p /workdir/macs2_output
 mkdir -p /workdir/tmp
 
+sample_rep="${sample}.Rep_${replicate}"
+
 cd /workdir/bowtie2_output
 if [[ ${params.seq} == "paired" ]] && [[ ${params.input} == 'no' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
 elif [[ ${params.seq} == "single" ]] && [[ ${params.input} == 'no' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
 elif [[ ${params.seq} == "paired" ]] && [[ ${params.input} == 'yes' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
 elif [[ ${params.seq} == "single" ]] && [[ ${params.input} == 'yes' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n ${sample} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
 fi
 
     """
@@ -83,9 +86,10 @@ workflow{
     }
 
   rows=Channel.fromPath("${params.samples_csv}", checkIfExists:true).splitCsv(sep:',', skip: 1)
-  rows=rows.filter{ ! file( "${params.project_folder}/macs2_output/${it[0]}_peaks.xls" ).exists() }
-  sample=rows.flatMap { n -> n[0] }
+  rows=rows.filter{ ! file( "${params.project_folder}/macs2_output/${it[1]}.Rep_${it[2]}_peaks.xls" ).exists() }
+  sample=rows.flatMap { n -> n[1] }
+  replicate=rows.flatMap { n -> n[2] }
   treatment_file=rows.flatMap { n -> n[3] }
   control_file=rows.flatMap { n -> n[5] }
-  macs2(sample,treatment_file,control_file,peak_type)
+  macs2(sample,replicate,treatment_file,control_file,peak_type)
 }
