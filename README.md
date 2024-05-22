@@ -8,8 +8,7 @@ mkdir -p /tmp/nextflow_atac_local_test/macs_test
 
 Download the demo data:
 ```
-mkdir -p /tmp/nextflow_atac_local_test/macs_test/raw_data
-cd /tmp/nextflow_atac_local_test/macs_test/raw_data
+cd /tmp/nextflow_atac_local_test/macs_test/
 curl -J -O https://datashare.mpcdf.mpg.de/s/nzO5RFUXK3kyhuw/download
 unzip bowtie2_output.zip 
 
