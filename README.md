@@ -3,12 +3,13 @@
 
 Create the test directory:
 ```
-mkdir -p ~/nf_atacseq_test/
+mkdir -p /tmp/nextflow_atac_local_test/macs_test
 ```
 
 Download the demo data:
 ```
-cd ~/nf_atacseq_test/raw_data
+mkdir -p /tmp/nextflow_atac_local_test/macs_test/raw_data
+cd /tmp/nextflow_atac_local_test/macs_test/raw_data
 curl -J -O https://datashare.mpcdf.mpg.de/s/nzO5RFUXK3kyhuw/download
 unzip bowtie2_output.zip 
 
@@ -16,12 +17,10 @@ unzip bowtie2_output.zip
 
 Download the paramaters file:
 ```
-cd ~/nf_atacseq_test
-curl -J -O https://raw.githubusercontent.com/mpg-age-bioinformatics/nf-macs/main/params.slurm.json
+cd /tmp/nextflow_atac_local_test/macs_test/
+PARAMS=params.local.json
+curl -J -O https://raw.githubusercontent.com/mpg-age-bioinformatics/nf-macs/main${PARAMS}
 ```
-
-Change the parameters in params.json accordingly, e.g. change "project_folder" : "/raven/u/wangy/nf_atacseq_test/" to "project_folder" : Users/YOURNAME/nf-flexbar-test/"
-
 
 Run the workflow:
 

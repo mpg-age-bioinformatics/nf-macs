@@ -1,0 +1,8 @@
+{ 
+  "project_folder" : "/tmp/nextflow_atac_local_test/macs_test/" ,
+  "seq" : "single" ,
+  "input" : "yes" ,
+  "GeTAG" : "2666151232" ,
+  "peak_type" : "none",
+  "samples_csv" : "/tmp/nextflow_atac_local_test/macs_test/diffbind_sample_sheet.csv"
+}
