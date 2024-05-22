@@ -43,24 +43,24 @@ process macs2 {
 
     script:
     """
-mkdir -p /workdir/macs2_output
-mkdir -p /workdir/tmp
+mkdir -p ${params.project_folder}/macs2_output
+mkdir -p ${params.project_folder}/tmp
 
 sample_rep="${sample}.Rep_${replicate}"
 
-cd /workdir/bowtie2_output
+cd ${params.project_folder}/bowtie2_output
 if [[ ${params.seq} == "paired" ]] && [[ ${params.input} == 'no' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}
 elif [[ ${params.seq} == "single" ]] && [[ ${params.input} == 'no' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}
 elif [[ ${params.seq} == "paired" ]] && [[ ${params.input} == 'yes' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAMPE -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}
 elif [[ ${params.seq} == "single" ]] && [[ ${params.input} == 'yes' ]] ; then
-  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}"
-  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir /workdir/macs2_output -n \${sample_rep} -B --tempdir=/workdir/tmp ${peak_type}
+  echo "macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}"
+  macs2 callpeak -t ${treatment_file} -c ${control_file} -f BAM -q 0.05 --keep-dup all --gsize ${params.GeTAG} --outdir ${params.project_folder}/macs2_output -n \${sample_rep} -B --tempdir=${params.project_folder}/tmp ${peak_type}
 fi
 
     """
