@@ -19,16 +19,22 @@ Download the paramaters file:
 ```
 cd /tmp/nextflow_atac_local_test/macs_test/
 PARAMS=params.local.json
-curl -J -O https://raw.githubusercontent.com/mpg-age-bioinformatics/nf-macs/main${PARAMS}
+curl -J -O https://raw.githubusercontent.com/mpg-age-bioinformatics/nf-macs/main/${PARAMS}
+curl -J -O https://raw.githubusercontent.com/mpg-age-bioinformatics/nf-macs/main/diffbind_sample_sheet.csv
+```
+
+Get the latest repo:
+```
+cd /tmp/nextflow_atac_local_test/
+git clone https://github.com/mpg-age-bioinformatics/nf-macs.git
 ```
 
 Run the workflow:
 
 ```
-PROFILE=studio
-nextflow run nf-macs -params-file ~/nf_atacseq_test/params.slurm.json -entry images -profile ${PROFILE}  && \
-nextflow run nf-diffbind -params-file ~/nf_atacseq_test/params.slurm.json -entry samplesheet -profile ${PROFILE}  && \
-nextflow run nf-macs -params-file ~/nf_atacseq_test/params.slurm.json -profile ${PROFILE}
+nextflow run nf-macs -params-file macs_test/${PARAMS} -entry images --user "$(id -u):$(id -g)" && \
+#nextflow run nf-diffbind -params-file ${PARAMS} -entry samplesheet && \
+nextflow run nf-macs -params-file macs_test/${PARAMS} --user "$(id -u):$(id -g)"
 ```
 
 ## Contributing
