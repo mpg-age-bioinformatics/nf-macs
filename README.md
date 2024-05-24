@@ -19,8 +19,12 @@ Download the paramaters file:
 cd /tmp/nextflow_atac_local_test/macs_test/
 PARAMS=params.local.json
 curl -J -O https://raw.githubusercontent.com/mpg-age-bioinformatics/nf-macs/main/${PARAMS}
+
+Prepare the required sample sheet, either create a csv file in this format:
+```
 curl -J -O https://raw.githubusercontent.com/mpg-age-bioinformatics/nf-macs/main/diffbind_sample_sheet.csv
 ```
+or following this [repo](https://github.com/mpg-age-bioinformatics/nf-diffbind) and do command `nextflow run nf-diffbind -params-file ${PARAMS} -entry samplesheet --user "$(id -u):$(id -g)"`
 
 Get the latest repo:
 ```
@@ -32,7 +36,6 @@ Run the workflow:
 
 ```
 nextflow run nf-macs -params-file macs_test/${PARAMS} -entry images --user "$(id -u):$(id -g)" && \
-#nextflow run nf-diffbind -params-file ${PARAMS} -entry samplesheet && \
 nextflow run nf-macs -params-file macs_test/${PARAMS} --user "$(id -u):$(id -g)"
 ```
 
